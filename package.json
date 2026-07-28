@@ -104,7 +104,7 @@
   },
   "peerDependencies": {
     "@carbon/icons-react": ">=11.84 <12",
-    "@modelcontextprotocol/sdk": ">=1.29 <2",
+    "@modelcontextprotocol/sdk": ">=1.30 <2",
     "graphology": ">=0.26 <1",
     "graphology-communities-louvain": ">=2 <3",
     "graphology-layout-forceatlas2": ">=0.10 <1",
@@ -145,11 +145,12 @@
     }
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@carbon/icons-react": "^11.84.0",
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
@@ -159,7 +160,7 @@
     "graphology-communities-louvain": "^2.0.2",
     "graphology-layout-forceatlas2": "^0.10.1",
     "graphology-layout-noverlap": "^0.4.2",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
