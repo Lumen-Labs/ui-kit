@@ -1,0 +1,6 @@
+# The repository root ignores every `.env*` file, which would also hide the
+# committed example. Keep the example visible; the real `.env.mcp.local`
+# holding the bearer token stays ignored.
+!.env.mcp.local.example
+dist/
+node_modules/

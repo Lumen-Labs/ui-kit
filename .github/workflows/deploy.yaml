@@ -1,0 +1,124 @@
+name: Lumen UI Kit prod
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lumen-ui-kit-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Create deployment archive
+        run: |
+          tar -czf deploy.tar.gz \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=showcase-dist \
+            --exclude=deploy.tar.gz \
+            --exclude='*.tsbuildinfo' \
+            --exclude=.DS_Store \
+            .
+
+      - name: Copy deployment archive via scp
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          source: "deploy.tar.gz"
+          target: "/home/chriscoder/lumen-ui-kit"
+          overwrite: true
+
+      - name: Configure server env and restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+            set -euo pipefail
+
+            APP_DIR="/home/chriscoder/lumen-ui-kit"
+            mkdir -p "$APP_DIR"
+            cd "$APP_DIR"
+
+            tar -xzf deploy.tar.gz
+            rm -f deploy.tar.gz
+
+            rm -f .env .env.development .env.production.local
+            touch .env.mcp.local
+            chmod 600 .env.mcp.local
+
+            merge_env() {
+              key="$1"
+              val="$2"
+              [ -z "$val" ] && return
+              grep -v "^${key}=" .env.mcp.local > .env.mcp.local.tmp || true
+              echo "${key}=${val}" >> .env.mcp.local.tmp
+              mv .env.mcp.local.tmp .env.mcp.local
+            }
+
+            merge_env LUMEN_MCP_TOKEN "${{ secrets.LUMEN_MCP_TOKEN }}"
+            merge_env LUMEN_MCP_HOST "${{ secrets.LUMEN_MCP_HOST }}"
+            merge_env LUMEN_MCP_PORT "${{ secrets.LUMEN_MCP_PORT }}"
+            merge_env LUMEN_MCP_ALLOWED_HOSTS "${{ secrets.LUMEN_MCP_ALLOWED_HOSTS }}"
+            merge_env LUMEN_MCP_ALLOWED_ORIGINS "${{ secrets.LUMEN_MCP_ALLOWED_ORIGINS }}"
+
+            grep -q '^LUMEN_MCP_HOST=' .env.mcp.local || echo 'LUMEN_MCP_HOST=0.0.0.0' >> .env.mcp.local
+            grep -q '^LUMEN_MCP_PORT=' .env.mcp.local || echo 'LUMEN_MCP_PORT=1803' >> .env.mcp.local
+            chmod 600 .env.mcp.local
+
+            grep -q '^LUMEN_MCP_TOKEN=.' .env.mcp.local || {
+              echo "LUMEN_MCP_TOKEN is missing in $APP_DIR/.env.mcp.local" >&2
+              exit 1
+            }
+
+            env -u NODE_ENV npm ci
+
+            if [ ! -f dist/mcp/http-entry.js ]; then
+              echo "Missing dist/mcp/http-entry.js after extract — build did not ship" >&2
+              exit 1
+            fi
+
+            if pm2 describe lumen-ui-mcp >/dev/null 2>&1; then
+              pm2 delete lumen-ui-mcp
+            fi
+            pm2 start ecosystem.config.cjs --update-env
+            pm2 save

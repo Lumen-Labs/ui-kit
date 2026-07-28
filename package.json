@@ -1,0 +1,174 @@
+{
+  "name": "lumen-ui-kit",
+  "version": "0.1.0",
+  "description": "Accessible React, Tailwind CSS, and Next.js components for the Lumen design system.",
+  "license": "MIT",
+  "author": "Lumen Labs",
+  "homepage": "https://github.com/Lumen-Labs/pipeer/tree/main/ui-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lumen-Labs/pipeer.git",
+    "directory": "ui-kit"
+  },
+  "bugs": {
+    "url": "https://github.com/Lumen-Labs/pipeer/issues"
+  },
+  "keywords": [
+    "react",
+    "design-system",
+    "components",
+    "tailwindcss",
+    "nextjs",
+    "accessibility",
+    "wcag",
+    "design-tokens",
+    "mcp",
+    "model-context-protocol"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "./dist/styles.css",
+    "./dist/graph/styles.css"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "showcase/src/workbench.tsx",
+    "README.md",
+    "REFERENCES.md",
+    "CATALOG.md",
+    "DATA-DISPLAY.md",
+    "LAYOUT.md",
+    "ICONS.md",
+    "GRAPH.md",
+    "MCP.md",
+    "guidelines"
+  ],
+  "bin": {
+    "lumen-ui-mcp": "./dist/mcp/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "default": "./dist/next/index.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "default": "./dist/icons/index.js"
+    },
+    "./graph": {
+      "types": "./dist/graph/index.d.ts",
+      "default": "./dist/graph/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/server.d.ts",
+      "default": "./dist/mcp/server.js"
+    },
+    "./mcp/http": {
+      "types": "./dist/mcp/http.d.ts",
+      "default": "./dist/mcp/http.js"
+    },
+    "./graph/styles.css": "./dist/graph/styles.css",
+    "./styles.css": "./dist/styles.css",
+    "./tokens": "./dist/tokens/core.tokens.json"
+  },
+  "scripts": {
+    "dev": "vite --config showcase/vite.config.ts",
+    "mcp": "tsx src/mcp/index.ts",
+    "mcp:http": "tsx src/mcp/http-entry.ts",
+    "build:showcase": "vite build --config showcase/vite.config.ts",
+    "preview:showcase": "vite preview --config showcase/vite.config.ts",
+    "test": "tsx --test \"src/**/*.test.tsx\" \"src/**/*.test.ts\" \"showcase/src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json && node ./scripts/copy-assets.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.18",
+    "@radix-ui/react-dropdown-menu": "^2.1.19",
+    "@radix-ui/react-popover": "^1.1.18",
+    "@radix-ui/react-tabs": "^1.1.16",
+    "@radix-ui/react-tooltip": "^1.2.11",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "@carbon/icons-react": ">=11.84 <12",
+    "@modelcontextprotocol/sdk": ">=1.29 <2",
+    "graphology": ">=0.26 <1",
+    "graphology-communities-louvain": ">=2 <3",
+    "graphology-layout-forceatlas2": ">=0.10 <1",
+    "graphology-layout-noverlap": ">=0.4 <1",
+    "next": ">=15 <17",
+    "react": ">=18.3 <20",
+    "react-dom": ">=18.3 <20",
+    "vis-data": ">=8 <9",
+    "vis-network": ">=10 <11"
+  },
+  "peerDependenciesMeta": {
+    "@carbon/icons-react": {
+      "optional": true
+    },
+    "@modelcontextprotocol/sdk": {
+      "optional": true
+    },
+    "graphology": {
+      "optional": true
+    },
+    "graphology-communities-louvain": {
+      "optional": true
+    },
+    "graphology-layout-forceatlas2": {
+      "optional": true
+    },
+    "graphology-layout-noverlap": {
+      "optional": true
+    },
+    "vis-data": {
+      "optional": true
+    },
+    "vis-network": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    }
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
+  "devDependencies": {
+    "@carbon/icons-react": "^11.84.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
+    "graphology-layout-forceatlas2": "^0.10.1",
+    "graphology-layout-noverlap": "^0.4.2",
+    "next": "16.2.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "vis-data": "^8.0.4",
+    "vis-network": "^10.1.0",
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.0.0",
+    "vite": "^8.0.0"
+  }
+}
