@@ -45,14 +45,14 @@ jobs:
 
       - name: Create deployment archive
         run: |
-          tar -czf deploy.tar.gz \
+          tar -czf "$RUNNER_TEMP/deploy.tar.gz" \
             --exclude=node_modules \
             --exclude=.git \
             --exclude=showcase-dist \
-            --exclude=deploy.tar.gz \
             --exclude='*.tsbuildinfo' \
             --exclude=.DS_Store \
             .
+          mv "$RUNNER_TEMP/deploy.tar.gz" deploy.tar.gz
 
       - name: Copy deployment archive via scp
         uses: appleboy/scp-action@v0.1.7
